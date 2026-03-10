@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You've Been Dealt In — Arya & Ryan's 17th Birthday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --felt: #080808;
+      --felt-light: #151515;
+      --gold: #d4af37;
+      --gold-dim: #b8962e;
+      --red: #8b0000;
+      --red-bright: #c41e3a;
+      --cream: #f5f0e6;
+      --black: #0a0a0a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Felt texture overlay */
+    .page-wrap {
+      position: relative;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(196,30,58,0.5) 0%, transparent 55%),
+        repeating-linear-gradient(
+          105deg,
+          transparent,
+          transparent 2px,
+          rgba(255,255,255,0.03) 2px,
+          rgba(255,255,255,0.03) 4px
+        ),
+        linear-gradient(180deg, #050505 0%, #120000 45%, #000000 100%);
+    }
+
+    /* Floating background elements */
+    .bg-float {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .float-suit {
+      position: absolute;
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      opacity: 0.12;
+      animation: float-suit 15s ease-in-out infinite;
+    }
+    .float-suit:nth-child(1) { left: 5%; top: 10%; animation-delay: 0s; color: var(--red-bright); }
+    .float-suit:nth-child(2) { left: 85%; top: 20%; animation-delay: -3s; color: var(--cream); }
+    .float-suit:nth-child(3) { left: 15%; top: 60%; animation-delay: -6s; color: var(--red-bright); }
+    .float-suit:nth-child(4) { left: 80%; top: 70%; animation-delay: -2s; color: var(--cream); }
+    .float-suit:nth-child(5) { left: 50%; top: 85%; animation-delay: -8s; color: var(--gold); }
+    .float-suit:nth-child(6) { left: 70%; top: 40%; animation-delay: -4s; color: var(--red-bright); }
+    .float-suit:nth-child(7) { left: 25%; top: 35%; animation-delay: -5s; color: var(--cream); }
+    .float-suit:nth-child(8) { left: 90%; top: 55%; animation-delay: -7s; color: var(--gold); }
+    @keyframes float-suit {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(10px, -15px) rotate(5deg); }
+      50% { transform: translate(-8px, 5px) rotate(-3deg); }
+      75% { transform: translate(5px, 10px) rotate(2deg); }
+    }
+
+    .float-chip {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      background: radial-gradient(circle at 30% 30%, var(--red-bright), var(--red));
+      opacity: 0.15;
+      animation: float-chip 12s ease-in-out infinite;
+    }
+    .float-chip:nth-child(9) { left: 10%; top: 25%; animation-delay: 0s; }
+    .float-chip:nth-child(10) { left: 88%; top: 15%; animation-delay: -4s; }
+    .float-chip:nth-child(11) { left: 75%; top: 80%; animation-delay: -6s; }
+    .float-chip:nth-child(12) { left: 20%; top: 75%; animation-delay: -2s; }
+    @keyframes float-chip {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-20px, -10px) scale(1.1); }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 4rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .content.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Click-to-reveal cover */
+    .reveal-cover {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse 100% 100% at 50% 50%, var(--felt-light) 0%, var(--felt) 40%, var(--black) 100%);
+      cursor: pointer;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .reveal-cover.is-revealed {
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .reveal-card {
+      width: min(320px, 85vw);
+      aspect-ratio: 2.5 / 3.5;
+      background: linear-gradient(145deg, #1a1a2e 0%, #0f0f1a 100%);
+      border: 4px solid var(--gold);
+      border-radius: 16px;
+      box-shadow:
+        0 0 0 2px var(--gold-dim),
+        0 20px 60px rgba(0,0,0,0.6),
+        inset 0 0 80px rgba(212,175,55,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    }
+
+    .reveal-cover:hover .reveal-card {
+      transform: scale(1.03);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.7), 0 0 40px rgba(212,175,55,0.2);
+    }
+
+    .reveal-card::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 10px;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(212,175,55,0.06) 8px,
+        rgba(212,175,55,0.06) 16px
+      );
+      pointer-events: none;
+    }
+
+    .reveal-card .card-suits {
+      font-size: 2.5rem;
+      letter-spacing: 0.4rem;
+      color: var(--gold);
+      opacity: 0.9;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reveal-card .card-label {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+      font-weight: 600;
+      color: var(--cream);
+      text-align: center;
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+    }
+
+    .reveal-card .card-hint {
+      font-size: 0.85rem;
+      color: var(--gold-dim);
+      margin-top: 1rem;
+      position: relative;
+      z-index: 1;
+      animation: hint-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes hint-pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    /* Hero – roulette / cards */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 4rem;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-wheel-wrap {
+      width: min(280px, 80vw);
+      height: min(280px, 80vw);
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+
+    .roulette-wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 6px solid var(--gold);
+      background: conic-gradient(
+        var(--red) 0deg 90deg,
+        var(--black) 90deg 180deg,
+        var(--red) 180deg 270deg,
+        var(--black) 270deg 360deg
+      );
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 0 30px rgba(212,175,55,0.3);
+      animation: spin-wheel 8s ease-in-out infinite;
+    }
+
+    .roulette-wheel::before {
+      content: '';
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      border: 3px solid var(--gold-dim);
+      background: radial-gradient(circle at 50% 50%, var(--felt), var(--black));
+    }
+
+    .roulette-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 4px solid var(--cream);
+      box-shadow: 0 0 15px rgba(212,175,55,0.6);
+    }
+
+    .roulette-center::after {
+      content: '17';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .hero .hero-names {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.75rem, 5vw, 2.6rem);
+      font-weight: 700;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(212,175,55,0.4);
+      margin-bottom: 0.35rem;
+      line-height: 1.25;
+    }
+
+    .hero .hero-sub {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      letter-spacing: 0.08em;
+    }
+
+    /* Info row (event / date / address) */
+    .info-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .info-card {
+      flex: 1 1 0;
+      min-width: 0;
+      background: linear-gradient(145deg, #151515, #050505);
+      border-radius: 16px;
+      border: 2px solid rgba(212,175,55,0.7);
+      padding: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .info-card::before {
+      content: '♦';
+      position: absolute;
+      top: 0.6rem;
+      right: 0.9rem;
+      font-size: 1.2rem;
+      color: var(--red-bright);
+      opacity: 0.7;
+    }
+
+    .info-card h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card .detail {
+      font-size: 1.25rem;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    /* Card deal sections – revealed one by one */
+    .card-section {
+      background: radial-gradient(circle at 0 0, rgba(196,30,58,0.3), transparent 55%),
+                  radial-gradient(circle at 100% 100%, rgba(212,175,55,0.25), transparent 60%),
+                  linear-gradient(145deg, #111111, #050505);
+      border: 2px solid rgba(212,175,55,0.7);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(212,175,55,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-section::before {
+      content: '♠';
+      position: absolute;
+      top: 0.5rem;
+      left: 1rem;
+      font-size: 1.5rem;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    .card-section:nth-child(odd)::before { content: '♥'; color: var(--red-bright); }
+    .card-section .card-inner { opacity: 0; transform: translateY(20px); }
+
+    .card-section h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .card-section p, .card-section .detail {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--cream);
+    }
+
+    /* Marquee date */
+    .marquee-wrap {
+      background: var(--black);
+      border: 3px solid var(--gold);
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .marquee-wrap::before,
+    .marquee-wrap::after {
+      content: '♦ ♣ ♠ ♥';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.9rem;
+      letter-spacing: 0.5rem;
+      color: var(--gold);
+      opacity: 0.5;
+      animation: marquee-scroll 6s linear infinite;
+    }
+    .marquee-wrap::before { left: -100%; }
+    .marquee-wrap::after { left: 100%; animation-direction: reverse; }
+
+    @keyframes marquee-scroll {
+      to { transform: translateY(-50%) translateX(50px); }
+    }
+
+    .marquee-date {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.4rem, 4vw, 1.8rem);
+      font-weight: 700;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    }
+
+    /* Dress code – rule board */
+    .dress-section {
+      background: radial-gradient(circle at 0 0, rgba(196,30,58,0.3), transparent 55%),
+                  linear-gradient(180deg, #151515 0%, #050505 100%);
+      border: 4px solid var(--gold);
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.5), 0 0 25px rgba(212,175,55,0.2);
+    }
+
+    .dress-section h2 {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      color: var(--red-bright);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .dress-section .rule-line {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(212,175,55,0.3);
+      font-size: 1rem;
+    }
+
+    .dress-section .rule-line:last-child { border-bottom: none; }
+    .dress-section .rule-num { color: var(--gold); font-family: 'Cinzel', serif; min-width: 2rem; }
+
+    /* RSVP – betting table */
+    .rsvp-section {
+      background: linear-gradient(145deg, rgba(139,0,0,0.5), rgba(10,10,10,0.95));
+      border: 3px solid var(--gold);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 30px rgba(139,0,0,0.2);
+    }
+
+    .rsvp-section h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .rsvp-section .bet-prompt {
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      opacity: 0.95;
+    }
+
+    .rsvp-form {
+      max-width: 360px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .rsvp-label,
+    .rsvp-choices-label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--gold-dim);
+      margin-bottom: 0.4rem;
+    }
+
+    .rsvp-choices-label { margin-top: 1rem; }
+
+    .rsvp-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      background: rgba(0,0,0,0.4);
+      border: 2px solid var(--gold-dim);
+      border-radius: 8px;
+      color: var(--cream);
+      margin-bottom: 0.5rem;
+    }
+
+    .rsvp-input::placeholder { color: rgba(245,240,230,0.5); }
+    .rsvp-input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.2);
+    }
+
+    .rsvp-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .rsvp-choice {
+      flex: 1;
+      min-width: 90px;
+      padding: 0.7rem 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: rgba(0,0,0,0.4);
+      border: 2px solid var(--gold-dim);
+      border-radius: 8px;
+      color: var(--cream);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .rsvp-choice:hover {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.15);
+    }
+
+    .rsvp-choice.selected {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.25);
+      color: var(--gold);
+    }
+
+    .rsvp-choice[data-response="Yes"].selected { border-color: #2ecc71; background: rgba(46,204,113,0.2); color: #2ecc71; }
+    .rsvp-choice[data-response="No"].selected { border-color: var(--red-bright); background: rgba(196,30,58,0.2); color: #e88; }
+    .rsvp-choice[data-response="Maybe"].selected { border-color: var(--gold); }
+
+    .rsvp-msg {
+      min-height: 1.5em;
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .rsvp-msg.success { color: #2ecc71; }
+    .rsvp-msg.error { color: var(--red-bright); }
+
+    .rsvp-form .spin-btn { width: 100%; margin-top: 0.5rem; }
+
+    /* Slot machine (legacy, kept for reference) */
+    .slot-machine {
+      display: inline-flex;
+      align-items: stretch;
+      gap: 4px;
+      background: linear-gradient(180deg, #2a2a2a, #0a0a0a);
+      border: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 0 25px rgba(212,175,55,0.25);
+      margin-bottom: 1rem;
+    }
+
+    .slot-reel {
+      width: 70px;
+      height: 80px;
+      background: var(--black);
+      border: 2px solid var(--gold-dim);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    .slot-reel .reel-strip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s linear;
+    }
+
+    .slot-result {
+      margin-top: 1rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      min-height: 1.5em;
+    }
+
+    .slot-result.yes { color: #2ecc71; }
+    .slot-result.no { color: var(--red-bright); }
+
+    .spin-btn {
+      margin-top: 1rem;
+      padding: 0.9rem 2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+      color: var(--black);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .spin-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212,175,55,0.5);
+    }
+
+    .spin-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Countdown – casino clock */
+    .countdown-section {
+      background: radial-gradient(circle at 0 0, rgba(196,30,58,0.35), transparent 55%),
+                  #050505;
+      border: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(139,0,0,0.2);
+    }
+
+    .countdown-section h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      color: var(--red-bright);
+      margin-bottom: 1rem;
+      letter-spacing: 0.1em;
+    }
+
+    .countdown-clock {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .countdown-unit {
+      background: linear-gradient(180deg, #1a1a1a, #0a0a0a);
+      border: 2px solid var(--gold);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      min-width: 70px;
+    }
+
+    .countdown-unit .value {
+      font-family: 'Cinzel', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-unit .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cream);
+      opacity: 0.8;
+      margin-top: 0.25rem;
+    }
+
+    @keyframes spin-wheel {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(90deg); }
+      50% { transform: rotate(180deg); }
+      75% { transform: rotate(270deg); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    footer .suits { letter-spacing: 0.5em; color: var(--gold); }
+
+    @media (max-width: 600px) {
+      .content { padding: 1rem; }
+      .info-row { flex-direction: column; }
+      .slot-reel { width: 56px; height: 64px; font-size: 1rem; }
+      .countdown-unit .value { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="bg-float" aria-hidden="true">
+      <span class="float-suit">♠</span>
+      <span class="float-suit">♥</span>
+      <span class="float-suit">♦</span>
+      <span class="float-suit">♣</span>
+      <span class="float-suit">♠</span>
+      <span class="float-suit">♥</span>
+      <span class="float-suit">♦</span>
+      <span class="float-suit">♣</span>
+      <div class="float-chip"></div>
+      <div class="float-chip"></div>
+      <div class="float-chip"></div>
+      <div class="float-chip"></div>
+    </div>
+
+    <div class="reveal-cover" id="revealCover" role="button" tabindex="0" aria-label="Click to open invite">
+      <div class="reveal-card">
+        <span class="card-suits" aria-hidden="true">♠ ♥ ♦ ♣</span>
+        <p class="card-label">You've been dealt in</p>
+        <p class="card-hint">Click to open your invite</p>
+      </div>
+    </div>
+
+    <main class="content">
+      <section class="hero" id="hero">
+        <div class="hero-wheel-wrap">
+          <div class="roulette-wheel"></div>
+          <div class="roulette-center"></div>
+        </div>
+        <h1 class="hero-names">Arya Salvaji & Ryan Thomas</h1>
+        <p class="hero-sub">17th Birthday Casino Night ♠ ♥ ♦ ♣</p>
+      </section>
+
+      <section class="info-row" aria-label="Event details">
+        <div class="info-card" id="card-event">
+          <div class="card-inner">
+            <h2>Event</h2>
+            <p class="detail">Arya Salvaji &amp; Ryan Thomas' 17th Birthday Party</p>
+          </div>
+        </div>
+        <div class="info-card" id="card-date">
+          <div class="card-inner">
+            <h2>Date &amp; Time</h2>
+            <div class="marquee-wrap">
+              <div class="marquee-date">Monday, March 16th · 7:00 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-card" id="card-address">
+          <div class="card-inner">
+            <h2>Address</h2>
+            <p class="detail">3809 Carya Dr</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section dress-section" id="card-dress">
+        <div class="card-inner">
+          <h2>House rules — dress code</h2>
+          <div class="rule-line"><span class="rule-num">1.</span> Casual</div>
+          <div class="rule-line"><span class="rule-num">2.</span> No tomfoolery</div>
+          <div class="rule-line"><span class="rule-num">3.</span> Please don't do anything dumb</div>
+        </div>
+      </section>
+
+      <section class="card-section rsvp-section" id="card-rsvp">
+        <div class="card-inner">
+          <h2>Place your bet</h2>
+          <p class="bet-prompt">Are you in or out?</p>
+          <iframe name="rsvpFrame" id="rsvpFrame" title="RSVP submission" style="display:none; width:0; height:0; border:0;"></iframe>
+          <form id="rsvpForm" class="rsvp-form" novalidate>
+            <label for="rsvpName" class="rsvp-label">Your name</label>
+            <input type="text" id="rsvpName" name="name" class="rsvp-input" placeholder="Enter your name" required autocomplete="name" />
+            <p class="rsvp-choices-label">Response</p>
+            <div class="rsvp-choices" role="group" aria-label="RSVP response">
+              <button type="button" class="rsvp-choice" data-response="Yes">Yes</button>
+              <button type="button" class="rsvp-choice" data-response="Maybe">Maybe</button>
+              <button type="button" class="rsvp-choice" data-response="No">No</button>
+            </div>
+            <input type="hidden" id="rsvpResponse" name="response" value="" required />
+            <p class="rsvp-msg" id="rsvpMsg" aria-live="polite"></p>
+            <button type="submit" class="spin-btn" id="rsvpSubmit">Submit RSVP</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="card-section countdown-section" id="card-countdown">
+        <div class="card-inner">
+          <h2>Countdown to the big night</h2>
+          <div class="countdown-clock" id="countdownClock">
+            <div class="countdown-unit"><span class="value" id="cd-days">0</span><span class="label">Days</span></div>
+            <div class="countdown-unit"><span class="value" id="cd-hours">0</span><span class="label">Hours</span></div>
+            <div class="countdown-unit"><span class="value" id="cd-mins">0</span><span class="label">Mins</span></div>
+            <div class="countdown-unit"><span class="value" id="cd-secs">0</span><span class="label">Secs</span></div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p><span class="suits">♠ ♥ ♦ ♣</span> See you at the tables <span class="suits">♠ ♥ ♦ ♣</span></p>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const revealCover = document.getElementById('revealCover');
+      const revealCard = revealCover.querySelector('.reveal-card');
+      const mainContent = document.querySelector('.content');
+
+      let revealed = false;
+
+      function revealInvite() {
+        if (revealed) return;
+        revealed = true;
+        revealCover.style.cursor = 'default';
+
+        gsap.to(revealCard, {
+          scale: 1.4,
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.in'
+        });
+        gsap.to(revealCover, {
+          opacity: 0,
+          duration: 0.45,
+          delay: 0.15,
+          ease: 'power2.in',
+          onComplete: function() {
+            revealCover.classList.add('is-revealed');
+            mainContent.classList.add('is-visible');
+            runInviteAnimation();
+          }
+        });
+      }
+
+      revealCover.addEventListener('click', revealInvite);
+      revealCover.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); revealInvite(); }
+      });
+
+      function runInviteAnimation() {
+        const heroNames = document.querySelector('.hero .hero-names');
+        const heroSub = document.querySelector('.hero .hero-sub');
+        const heroWheel = document.querySelector('.hero-wheel-wrap');
+        gsap.set([heroWheel, heroNames, heroSub], { opacity: 0, y: 20 });
+        gsap.to(heroWheel, { opacity: 1, y: 0, duration: 0.8, delay: 0.2, ease: 'power2.out' });
+        gsap.to(heroNames, { opacity: 1, y: 0, duration: 0.6, delay: 0.5, ease: 'power2.out' });
+        gsap.to(heroSub, { opacity: 1, y: 0, duration: 0.5, delay: 0.8, ease: 'power2.out' });
+
+        const cardSections = document.querySelectorAll('.card-section');
+        cardSections.forEach((section, i) => {
+          const inner = section.querySelector('.card-inner');
+          if (!inner) return;
+          gsap.set(inner, { opacity: 0, y: 30 });
+          gsap.to(inner, {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power2.out',
+            delay: 1.2 + i * 0.35,
+            overwrite: true
+          });
+        });
+      }
+
+      // ——— RSVP form → Google Sheet ———
+      // Set this to your Google Apps Script Web App URL (Deploy as Web app, Execute as Me, Who has access: Anyone).
+      // See SETUP-GOOGLE-SHEET.md for the script to paste in Apps Script.
+      const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziQ8YxPIuKPjt4L9WL1K2_3Yc3xGgZ0MbIXIUqcbchCfotBqnn-Iwfh8y-b7ZOU55m/exec';
+
+      const rsvpForm = document.getElementById('rsvpForm');
+      const rsvpName = document.getElementById('rsvpName');
+      const rsvpResponse = document.getElementById('rsvpResponse');
+      const rsvpMsg = document.getElementById('rsvpMsg');
+      const rsvpSubmit = document.getElementById('rsvpSubmit');
+      const choiceBtns = document.querySelectorAll('.rsvp-choice');
+
+      choiceBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          choiceBtns.forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          rsvpResponse.value = this.getAttribute('data-response');
+          rsvpMsg.textContent = '';
+        });
+      });
+
+      rsvpForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = (rsvpName.value || '').trim();
+        const response = rsvpResponse.value;
+        if (!name) {
+          rsvpMsg.textContent = 'Please enter your name.';
+          rsvpMsg.className = 'rsvp-msg error';
+          return;
+        }
+        if (!response) {
+          rsvpMsg.textContent = 'Please choose Yes, Maybe, or No.';
+          rsvpMsg.className = 'rsvp-msg error';
+          return;
+        }
+
+        if (!GOOGLE_SCRIPT_URL) {
+          rsvpMsg.textContent = 'RSVP not connected. Add your Google Script URL (see SETUP-GOOGLE-SHEET.md).';
+          rsvpMsg.className = 'rsvp-msg error';
+          return;
+        }
+
+        rsvpSubmit.disabled = true;
+        rsvpMsg.textContent = 'Sending…';
+        rsvpMsg.className = 'rsvp-msg';
+
+        var url = GOOGLE_SCRIPT_URL + '?name=' + encodeURIComponent(name) + '&response=' + encodeURIComponent(response);
+        var iframe = document.getElementById('rsvpFrame');
+        iframe.src = url;
+
+        setTimeout(function() {
+          rsvpMsg.textContent = "Thanks! We've got your response.";
+          rsvpMsg.className = 'rsvp-msg success';
+          rsvpName.value = '';
+          rsvpResponse.value = '';
+          choiceBtns.forEach(b => b.classList.remove('selected'));
+          rsvpSubmit.disabled = false;
+        }, 600);
+      });
+
+      // ——— Countdown to March 16 ———
+      function getNextMarch16() {
+        const now = new Date();
+        let y = now.getFullYear();
+        let march16 = new Date(y, 2, 16, 19, 0, 0); // 7 PM
+        if (march16 <= now) march16 = new Date(y + 1, 2, 16, 19, 0, 0);
+        return march16;
+      }
+
+      function updateCountdown() {
+        const end = getNextMarch16();
+        const now = new Date();
+        let diff = Math.max(0, end - now);
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        diff -= days * 1000 * 60 * 60 * 24;
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        diff -= hours * 1000 * 60 * 60;
+        const mins = Math.floor(diff / (1000 * 60));
+        diff -= mins * 1000 * 60;
+        const secs = Math.floor(diff / 1000);
+        document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+        document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+        document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    })();
+  </script>
+</body>
+</html>
